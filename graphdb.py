@@ -13,7 +13,7 @@ import collections
 # create an edge from item to similarItem. If the item already exists in the graph,
 # only create the edge and not the node.
 
-
+# Create graph from pandas dataframe
 def createGraph(graph,data):
     print('Creating Graph based on CSV')
     for index,row in data.iterrows():
@@ -23,13 +23,16 @@ def createGraph(graph,data):
             for item in similarList:
                 graph.add_edge(row['ASIN'], item)
 
+# Import CSV into a pandas dataframe
 def importCSV(fileName):
     print('Importing CSV in DataFrame...')
     return pd.read_csv(fileName, dtype={'numsimilar':int})
 
+# Save graph file
 def saveGraph(graph, fileName):
     nx.write_gml(graph, fileName)
 
+# Import graph file
 def importGML(fileName):
     print('Loading Graph...')
     print('This may take a little while')
@@ -37,10 +40,12 @@ def importGML(fileName):
     print('Graph loaded')
     return graph
 
+# Compute the page rank values for every node in a graph
 def computePageRank(graph):
     print('Calculating PageRank for each Node!')
     return nx.pagerank(graph)
 
+# Get the 10 largest pagerank values
 def sortPageRank(pagerank):
     result = collections.defaultdict(list)
     for key,value in pagerank.items():
@@ -49,12 +54,17 @@ def sortPageRank(pagerank):
 
 # Start
 
-
+# Create digraph and dataframe
 amazonGraph = nx.DiGraph()
 data = pd.DataFrame()
 
+# Import CSV into dataframe
 #data = importCSV("amzn.csv")
+
+# Create a graph from the pandas dataframe
 #createGraph(amazonGraph,data)
+
+# Save graph to file
 #saveGraph(amazonGraph, "test1.gml")
 
 if __name__=='main':
