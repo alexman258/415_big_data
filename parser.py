@@ -5,8 +5,7 @@
 Parse the full amazon-meta.txt
 
 Format of Data:
-['Id', 'ASIN', 'title', 'group', 'salesrank', 'numsimilar', 'similar', 'categories', 'totalreviews','avgrating']
-Id          -   Starts at 1 and increments
+['ASIN', 'title', 'group', 'salesrank', 'numsimilar', 'similar', 'categories', 'totalreviews','avgrating']
 ASIN        -   Amazon Identification number
 title       -   The name of the item
 group       -   Which group the item belongs to. (eg, book, musicm etc)
@@ -21,16 +20,15 @@ Saves the data into CSV format.
 """
 def parseAll(content):        
 
-    file = open("amzn.txt","w", encoding='utf8')
-    previouslines = ['Id', 'ASIN', 'title', 'group', 'salesrank', 'numsimilar', 'similar', 'categories', 'totalreviews', 'avgrating']
-    writeToFile(file, previouslines)
+    file = open("amzn123.txt","w", encoding='utf8')
+    previouslines = ['ASIN', 'title', 'group', 'salesrank', 'numsimilar', 'similar', 'categories', 'totalreviews', 'avgrating']
     for line in content:
-        
+
         lines = line.split(':')
-        if lines[0] == 'Id':
-            previouslines.append(lines[1].strip())
     
         if lines[0] == 'ASIN':
+            writeToFile(file, previouslines, 9)
+            previouslines = []
             previouslines.append(lines[1].strip())
 
         if lines[0] == 'title':
@@ -45,8 +43,6 @@ def parseAll(content):
 
         if lines[0] == 'similar':
             similarList = lines[1].strip().split()
-            #print(similarList)
-            #print(type(similarList))
             if len(similarList) == 1:
                 previouslines.append('-1')
                 previouslines.append('-1')
@@ -60,20 +56,48 @@ def parseAll(content):
         if lines[0] == "reviews" and lines[1].strip() == "total":
             previouslines.append(lines[2].split(' ')[1])
             previouslines.append(lines[4].strip())
-            writeToFile(file, previouslines, 10)
-            previouslines = []
 
     file.close()
 
 
+def parseGroup(content, groupName):
+    file = open(groupName+".txt","w", encoding='utf8')
+    previouslines = ['ASIN', 'title', 'salesrank', 'avgrating']
+    for line in content:
 
+        lines = line.split(':')
+    
+        if lines[0] == 'ASIN':
+            writeToFile(file, previouslines, 4)
+            previouslines = []
+            previouslines.append(lines[1].strip())
+
+        elif lines[0] == 'title':
+            title = ':'.join(lines[1:]).strip().replace(',', ' ').replace('\n', ' ').strip()
+            previouslines.append(title)
+
+        elif lines[0] == 'group':
+            #print(lines[1].strip())
+            if lines[1].strip() != groupName:
+                previouslines = []
+                continue
+
+        elif lines[0] == 'salesrank':
+            previouslines.append(lines[1].strip())
+
+        elif lines[0] == "reviews" and lines[1].strip() == "total":
+            previouslines.append(lines[4].strip())
+        else:
+            continue
+
+    file.close()
 
 def writeToFile(file, prevLines, expectedLen):
     if(len(prevLines) == expectedLen):
-        for component in prevLines[0:9]:
+        for component in prevLines[0:(expectedLen-1)]:
             file.write(component)
             file.write(',')
-        file.write(prevLines[9])
+        file.write(prevLines[expectedLen-1])
         file.write('\n')
 
 def openAndStrip(fileName):
@@ -106,15 +130,16 @@ SourceASIN | SimilarASIN
 123        | asdf
 """
 def parseSimilar(content):
-    file = open("testSimilar.txt","w", encoding='utf8')
-    previouslines = ['ASIN', 'similar']
-    #writeToFile(file, previouslines, 2)
+    file = open("similar.txt","w", encoding='utf8')
+
     asin = ''
     similarAsin = ''
+    file.write(asin)
+    file.write(',')
+    file.write(similarAsin)
+    file.write('\n')
     for line in content:
         
-        
-
         lines = line.split(':')
 
         if lines[0] == 'ASIN':
@@ -122,8 +147,6 @@ def parseSimilar(content):
 
         if lines[0] == 'similar':
             similarList = lines[1].strip().split()
-            #print(similarList)
-            #print(type(similarList))
             if len(similarList) == 1:
                 continue
             else:
@@ -134,11 +157,18 @@ def parseSimilar(content):
                     file.write(similarAsin)
                     file.write('\n')
     file.close()
+ 
         
 # start
 
 fname = "amazon-meta.txt"
 content = openAndStrip(fname)
-
-#parseAll(content)
-parseSimilar(content)
+groupToParse = "Toy"
+#arseAll(content)
+#parseSimilar(content)
+#parseGroup(content,groupToParse)
+parseGroup(content, "Video Games")
+parseGroup(content, "Software")
+parseGroup(content, "Baby Product")
+parseGroup(content, "CE")
+parseGroup(content, "Sports")
