@@ -60,6 +60,13 @@ def parseAll(content):
     file.close()
 
 
+"""
+Parses a the amazon-meta.txt depending on the group.
+Inputting "book" will parse all the products with the group label "book"
+
+Content is .readlines() output of the amazon-meta.txt file with
+all beginning and trailing white spaces stripped.
+"""
 def parseGroup(content, groupName):
     file = open(groupName+".txt","w", encoding='utf8')
     previouslines = ['ASIN', 'title', 'salesrank', 'avgrating']
@@ -163,12 +170,8 @@ def parseSimilar(content):
 
 fname = "amazon-meta.txt"
 content = openAndStrip(fname)
-groupToParse = "Toy"
-#arseAll(content)
+groupToParse = "Book"
+#parseAll(content)
 #parseSimilar(content)
-#parseGroup(content,groupToParse)
-parseGroup(content, "Video Games")
-parseGroup(content, "Software")
-parseGroup(content, "Baby Product")
-parseGroup(content, "CE")
-parseGroup(content, "Sports")
+parseGroup(content,groupToParse)
+
