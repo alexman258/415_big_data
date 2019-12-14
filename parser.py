@@ -117,6 +117,29 @@ def openAndStrip(fileName):
     return content
 
 
+def parseProduct():
+    file = open("product.csv","w", encoding='utf8')
+
+    asin = ''
+    group = ''
+    file.write("ASIN")
+    file.write(',')
+    file.write("group")
+    file.write('\n')
+    for line in content:
+        
+        lines = line.split(':')
+
+        if lines[0] == 'ASIN':
+            asin = lines[1].strip()
+
+        if lines[0] == 'group':
+            group = lines[1].strip()
+            file.write(asin)
+            file.write(',')
+            file.write(group)
+            file.write('\n')
+    file.close()
 
 """
 The purpose of this function is to flatten out the data for similar items.
@@ -173,5 +196,7 @@ content = openAndStrip(fname)
 groupToParse = "Book"
 #parseAll(content)
 #parseSimilar(content)
-parseGroup(content,groupToParse)
+#parseGroup(content,groupToParse)
+
+parseProduct()
 
